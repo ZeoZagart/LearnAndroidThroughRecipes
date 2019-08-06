@@ -37,7 +37,7 @@ class RecipeFragment : Fragment() {
     private fun getData(ingredient: String = Constants.defaultIngredient) =
         viewModel.fetchData(mRecyclerView.adapter!!::notifyDataSetChanged, ::onFailureCallback, ingredient)
 
-    private fun onFailureCallback() = Toast.makeText(this.context, "No Recipe Found", Toast.LENGTH_SHORT).show()
+    private fun onFailureCallback() = Toast.makeText(this.context, "No Recipe Found. Please try another ingredient.", Toast.LENGTH_SHORT).show()
 
     fun createActivityIntent(ingredient: String = Constants.defaultIngredient) {
         val bundle = Bundle()

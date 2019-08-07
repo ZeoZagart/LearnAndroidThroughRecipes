@@ -17,4 +17,4 @@ import androidx.room.PrimaryKey
 data class DBRecipeSearchResult(val ingredient: String, val title: String)
 
 @Entity
-data class DBRecipe(@PrimaryKey val title: String, val href: String?, val ingredients: String?, val thumbnail: String?)
+data class DBRecipe(@PrimaryKey val title: String, val href: String, val ingredients: String, val thumbnail: String)

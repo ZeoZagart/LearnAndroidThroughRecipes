@@ -7,10 +7,10 @@ class MemoryStore : Store {
         recipeDict[ingredient] = recipeList
     }
 
-    override fun get(ingredient: String): List<DBRecipe>? {
-        return when (recipeDict.containsKey(ingredient)) {
-            true -> recipeDict[ingredient]
-            false -> null
+    override fun get(ingredient: String,callback: (List<DBRecipe>?)->Unit){
+        when (recipeDict.containsKey(ingredient)) {
+            true -> callback(recipeDict[ingredient])
+            false -> callback(null as List<DBRecipe>?)
         }
     }
 }

@@ -10,12 +10,10 @@ data class PuppyResult(val title: String, val version: Float, val href: String, 
 
 class RecipeViewModel(application: Application) : AndroidViewModel(application) {
     init {
-        application.deleteDatabase("recipe.db")
         println("THIS IS THE CREATION OF THE GODLY LEGENDARY RECIPE VIEW MODEL HHAHHHHAHHHAHAHHAHAHHAHAHHAHAHAHHHHAHHAHAHAHAHHAHA")
     }
 
     val recipeList = mutableListOf<DBRecipe>()
-    //private val recipeStore = MemoryStore()
     val db = RecipeDatabase.getDatabase(application.applicationContext)
     private val recipeStore = DatabaseStore(db.DBFunctions())
 
@@ -24,35 +22,40 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
 
 
     fun fetchData(
-        callback: () -> Unit,
+        OnSuccessCallback: () -> Unit,
         onFailureCallback: () -> Unit,
         ingredient: String = Constants.defaultIngredient
     ) {
         println("FETCHING DATA ::::::: ::::::: ::::::: :::::: :::::: :::::: ::::::: :::: ::::: :::::: :::::::: :::::::::")
-        val tempList = recipeStore.get(ingredient)
+        val callback:(List<DBRecipe>?) -> Unit = { callbackRecipeList:List<DBRecipe>? ->
+            val tempList = callbackRecipeList
 
-        if (tempList.isNullOrEmpty()) {
-            println("ACTUALLY FETCHING DATA ::::::: ::::::: ::::::: :::::: :::::: :::::: ::::::: :::: ::::: :::::: :::::::: :::::::::")
-            puppyServe.getRecipeList(ingredient)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { result: PuppyResult ->
-                        recipeList.clear()
-                        recipeList.addAll(result.results)
-                        recipeStore.put(ingredient, result.results)
-                        //recipeDict[ingredient] = recipeList
-                        callback()
-                    },
-                    { throwable: Throwable ->
-                        println("Could not fetch any Data from API " + throwable.message)
-                        onFailureCallback()
-                    }
-                )
-        } else {
-            recipeList.clear()
-            recipeList.addAll(tempList)
+            if (tempList.isNullOrEmpty()) {
+                println("ACTUALLY FETCHING DATA ::::::: ::::::: ::::::: :::::: :::::: :::::: ::::::: :::: ::::: :::::: :::::::: :::::::::")
+                val p = puppyServe.getRecipeList(ingredient)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { result: PuppyResult ->
+                            recipeList.clear()
+                            recipeList.addAll(result.results)
+                            recipeStore.put(ingredient, result.results)
+                            OnSuccessCallback()
+                        },
+                        { throwable: Throwable ->
+                            println("Could not fetch any Data from API " + throwable.message)
+                            onFailureCallback()
+                        }
+                    )
+            } else {
+                println("@@@@@@@@@@@@@@@@@@@@ nnnnn     Got Something from the DataBase   ###########!!@!@!@!@!@   ")
+                recipeList.clear()
+                recipeList.addAll(tempList)
+                OnSuccessCallback()
+            }
         }
+
+        recipeStore.get(ingredient,callback)
     }
 
     override fun onCleared() {

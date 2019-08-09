@@ -9,12 +9,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.Database.DBRecipe
 import com.squareup.picasso.Picasso
 
-class RecipeAdapter(
-    private val recipeList: List<DBRecipe>,
-    val clickListener: (String) -> Unit
-) : RecyclerView.Adapter<RecipeViewHolder>() {
+class RecipeAdapter(private val recipeList: List<DBRecipe>, val clickListener: (String) -> Unit) : RecyclerView.Adapter<RecipeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -35,21 +33,12 @@ class RecipeAdapter(
         }
         val ingredientList: List<String> = recipeList[position].ingredients!!.split(",")
 
-        val firstIngredient = ingredientList[0]
-        holder.mIngredientView.text =
-            recipeList[position].ingredients!!.trim()//ingredientList.joinToString(separator = " .. ")
+        holder.mIngredientView.text = recipeList[position].ingredients!!.trim()
 
-
-        holder.mIngredientView.setOnClickListener {
-            clickListener(firstIngredient)
-        }
-        holder.mImageView.setOnClickListener {
-            clickListener(firstIngredient)
-        }
-
+        holder.mIngredientView.setOnClickListener { clickListener(ingredientList[0]) }
+        holder.mImageView.setOnClickListener { clickListener(ingredientList[0]) }
 
         Picasso.get().load(recipeList[position].thumbnail).resize(160, 160).into(holder.mImageView)
-
     }
 
 }

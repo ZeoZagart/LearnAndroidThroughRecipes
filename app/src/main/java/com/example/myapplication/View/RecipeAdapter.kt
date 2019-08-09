@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.View
 
 import android.content.Intent
 import android.net.Uri
@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.Database.DBRecipe
+import com.example.myapplication.R
 import com.squareup.picasso.Picasso
 
 class RecipeAdapter(private val recipeList: List<DBRecipe>, val clickListener: (String) -> Unit) : RecyclerView.Adapter<RecipeViewHolder>() {
@@ -31,9 +32,9 @@ class RecipeAdapter(private val recipeList: List<DBRecipe>, val clickListener: (
             i.data = Uri.parse(recipeList[position].href)
             startActivity(holder.itemView.context, i, null)
         }
-        val ingredientList: List<String> = recipeList[position].ingredients!!.split(",")
+        val ingredientList: List<String> = recipeList[position].ingredients.split(",")
 
-        holder.mIngredientView.text = recipeList[position].ingredients!!.trim()
+        holder.mIngredientView.text = recipeList[position].ingredients.trim()
 
         holder.mIngredientView.setOnClickListener { clickListener(ingredientList[0]) }
         holder.mImageView.setOnClickListener { clickListener(ingredientList[0]) }

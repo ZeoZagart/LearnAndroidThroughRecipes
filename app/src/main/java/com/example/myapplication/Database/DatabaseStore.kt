@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.Database
 
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -9,11 +9,23 @@ class DatabaseStore(private val dbFunctions: DBFunctions) : Store {
 
     override fun put(ingredient: String, recipeList: List<DBRecipe>): Unit {
         val observable = Observable.fromCallable {
-            dbFunctions.insertRecipes(recipeList)
-            dbFunctions.insertSearchResults(recipeList.map { DBRecipeSearchResult(ingredient, it.title) })
+            dbFunctions.insertRecipes(recipeList.map {
+                DBRecipe(
+                    it.title.trim(),
+                    it.href.trim(),
+                    it.ingredients.trim(),
+                    it.thumbnail.trim()
+                )
+            })
+            dbFunctions.insertSearchResults(recipeList.map {
+                DBRecipeSearchResult(
+                    ingredient.trim(),
+                    it.title.trim()
+                )
+            })
         }
 
-        observable.subscribeOn(Schedulers.io())
+        val p = observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { println("No On Next Needed ?? Probably " + it.toString()) },
@@ -34,6 +46,16 @@ class DatabaseStore(private val dbFunctions: DBFunctions) : Store {
                 {
                     println("Cannot return recipelist, message : " + it.message)
                 }
+            )
+    }
+
+    override fun delete(ingredient: String) {
+        val p = Observable.fromCallable { dbFunctions.deleteRecipe(ingredient) }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { println("No On Next Needed ?? Probably " + it.toString()) },
+                { println("Error Deleting data from database : " + it.message) },
+                { println("Data Item Deleted Successfully") }
             )
     }
 }

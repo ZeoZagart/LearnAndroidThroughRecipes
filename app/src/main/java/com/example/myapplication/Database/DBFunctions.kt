@@ -1,8 +1,6 @@
-package com.example.myapplication
+package com.example.myapplication.Database
 
 import androidx.room.*
-import com.example.myapplication.Database.DBRecipe
-import com.example.myapplication.Database.DBRecipeSearchResult
 import io.reactivex.Single
 
 @Dao

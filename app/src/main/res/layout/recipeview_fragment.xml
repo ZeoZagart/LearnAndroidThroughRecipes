@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:name="com.example.myapplication.RecipeFragment"
-        android:id="@+id/recycle_fragment"
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recipe_list"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    />
-</LinearLayout>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

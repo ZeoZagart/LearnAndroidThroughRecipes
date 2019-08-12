@@ -26,13 +26,12 @@ class DatabaseStore(private val dbFunctions: DBFunctions) : Store {
                     it.title.trim()
                 )
             })
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+        }
     }
 
 
     override fun get(ingredient: String): Single<List<DBRecipe>> {
-        return dbFunctions.fetchRecipeNameList(ingredient).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        return dbFunctions.fetchRecipeNameList(ingredient)
     }
 
     override fun delete(title: String): Completable {

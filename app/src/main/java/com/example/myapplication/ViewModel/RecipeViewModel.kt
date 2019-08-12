@@ -8,8 +8,6 @@ import com.example.myapplication.Database.RecipeDatabase
 import com.example.myapplication.Network.Networking
 import com.example.myapplication.Network.PuppyService
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
 
 data class PuppyResult(val title: String, val version: Float, val href: String, val results: List<DBRecipe>)
@@ -32,14 +30,11 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
     fun getData(ingredient: String, networkRefresh: Boolean): Single<List<DBRecipe>> {
         return recipeStore.get(ingredient).flatMap { list: List<DBRecipe> ->
             if (list.isEmpty() || networkRefresh) {
-                puppyServe.getRecipeList(ingredient).subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread()).map { result ->
+                puppyServe.getRecipeList(ingredient).map { result ->
                     fillRecipeList(result.results)
-                    recipeStore.put(ingredient, result.results).subscribe(
-                        { println("inserted data for ingredient : $ingredient in database") },
-                        { println("Error inserting data on database : " + it.message.toString()) }
-                    )
                     result.results
+                }.flatMap {
+                    recipeStore.put(ingredient, it).toSingle { it }
                 }
             } else {
                 fillRecipeList(list)

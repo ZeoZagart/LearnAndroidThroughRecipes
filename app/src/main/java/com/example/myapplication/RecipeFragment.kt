@@ -15,6 +15,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.View.RecipeAdapter
 import com.example.myapplication.View.SwipeController
 import com.example.myapplication.ViewModel.RecipeViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 
 class RecipeFragment : Fragment() {
@@ -61,13 +63,18 @@ class RecipeFragment : Fragment() {
         viewModel.deleteRecipeItem(mRecyclerView.adapter!!::notifyDataSetChanged, ingredient, listPosition)
     }
 
-    private fun getData(ingredient: String = Constants.defaultIngredient, networkRefresh: Boolean = false) =
-        viewModel.fetchData(
-            mRecyclerView.adapter!!::notifyDataSetChanged,
-            ::onFailureCallback,
-            ingredient,
-            networkRefresh
+    private fun getData(ingredient: String = Constants.defaultIngredient, networkRefresh: Boolean = false) {
+        val singleItem = viewModel.getData(ingredient, networkRefresh)
+
+        singleItem.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+            { mRecyclerView.adapter!!.notifyDataSetChanged() },
+            {
+                println("Error in fetxhing data for ingredient: $ingredient" + it.message.toString())
+                onFailureCallback()
+            }
         )
+
+    }
 
     private fun onFailureCallback() =
         Toast.makeText(this.context, "No Recipe Found. Please try another ingredient.", Toast.LENGTH_SHORT).show()

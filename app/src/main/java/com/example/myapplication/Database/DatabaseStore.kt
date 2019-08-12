@@ -1,14 +1,16 @@
 package com.example.myapplication.Database
 
-import io.reactivex.Observable
+import io.reactivex.Completable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 
 class DatabaseStore(private val dbFunctions: DBFunctions) : Store {
 
-    override fun put(ingredient: String, recipeList: List<DBRecipe>): Unit {
-        val observable = Observable.fromCallable {
+    override fun put(ingredient: String, recipeList: List<DBRecipe>): Completable {
+        return Completable.fromAction {
+            // insert recipe
             dbFunctions.insertRecipes(recipeList.map {
                 DBRecipe(
                     it.title.trim(),
@@ -17,45 +19,24 @@ class DatabaseStore(private val dbFunctions: DBFunctions) : Store {
                     it.thumbnail.trim()
                 )
             })
+            // insert search result
             dbFunctions.insertSearchResults(recipeList.map {
                 DBRecipeSearchResult(
                     ingredient.trim(),
                     it.title.trim()
                 )
             })
-        }
-
-        val p = observable.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { println("No On Next Needed ?? Probably " + it.toString()) },
-                { println("Error Inserting data into the database : " + it.message) },
-                { println("Data stored safely") }
-            )
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
     }
 
 
-    override fun get(ingredient: String, callback: (List<DBRecipe>?) -> Unit) {
-        val p = dbFunctions.fetchRecipeNameList(ingredient)
-            .subscribeOn(Schedulers.io())
+    override fun get(ingredient: String): Single<List<DBRecipe>> {
+        return dbFunctions.fetchRecipeNameList(ingredient).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    callback(it)
-                },
-                {
-                    println("Cannot return recipelist, message : " + it.message)
-                }
-            )
     }
 
-    override fun delete(ingredient: String) {
-        val p = Observable.fromCallable { dbFunctions.deleteRecipe(ingredient) }.subscribeOn(Schedulers.io())
+    override fun delete(title: String): Completable {
+        return Completable.fromAction { dbFunctions.deleteRecipe(title) }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { println("No On Next Needed ?? Probably " + it.toString()) },
-                { println("Error Deleting data from database : " + it.message) },
-                { println("Data Item Deleted Successfully") }
-            )
     }
 }

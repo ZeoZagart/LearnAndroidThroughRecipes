@@ -1,7 +1,10 @@
 package com.example.myapplication.Database
 
+import io.reactivex.Completable
+import io.reactivex.Single
+
 interface Store {
-    fun put(ingredient: String, recipeList: List<DBRecipe>)
-    fun get(ingredient: String, callback: (List<DBRecipe>?) -> Unit)
-    fun delete(ingredient: String)
+    fun put(ingredient: String, recipeList: List<DBRecipe>): Completable
+    fun get(ingredient: String): Single<List<DBRecipe>>
+    fun delete(ingredient: String): Completable
 }

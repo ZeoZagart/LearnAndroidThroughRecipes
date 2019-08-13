@@ -7,49 +7,39 @@ import com.example.myapplication.Database.DatabaseStore
 import com.example.myapplication.Database.RecipeDatabase
 import com.example.myapplication.Network.Networking
 import com.example.myapplication.Network.PuppyService
-import io.reactivex.Single
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 
 data class PuppyResult(val title: String, val version: Float, val href: String, val results: List<DBRecipe>)
 
 class RecipeViewModel(application: Application) : AndroidViewModel(application) {
     init {
+        application.deleteDatabase("recipe.db")
         println("RecipeViewModel Created!")
     }
 
-    val recipeList = mutableListOf<DBRecipe>()
+
     private val recipeStore = DatabaseStore(RecipeDatabase.getDatabase(application.applicationContext).DBFunctions())
     private val puppyServe: PuppyService = Networking.create().create(PuppyService::class.java)
 
 
-    private fun fillRecipeList(newRecipeList: List<DBRecipe>) {
-        recipeList.clear()
-        recipeList.addAll(newRecipeList)
-    }
+    fun getData(ingredient: String, networkRefresh: Boolean): Flowable<List<DBRecipe>> = recipeStore.get(ingredient)
 
-    fun getData(ingredient: String, networkRefresh: Boolean): Single<List<DBRecipe>> {
-        return recipeStore.get(ingredient).flatMap { list: List<DBRecipe> ->
-            if (list.isEmpty() || networkRefresh) {
-                puppyServe.getRecipeList(ingredient).map { result ->
-                    fillRecipeList(result.results)
-                    result.results
-                }.flatMap {
-                    recipeStore.put(ingredient, it).toSingle { it }
-                }
-            } else {
-                fillRecipeList(list)
-                Single.just(list)
-            }
-        }
+    fun deleteRecipeItem(title: String): Disposable? =
+        recipeStore.delete(title).doOnComplete { println("Recipe $title Deleted") }.subscribe()
+
+    fun fetchAndInsertItems(ingredient: String): Disposable? {
+        return puppyServe.getRecipeList(ingredient).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).subscribe(
+            { result: PuppyResult -> recipeStore.put(ingredient, result.results).subscribe() },
+            { println("Error fetching data from the internet : " + it.message.toString()) }
+        )
     }
 
 
-    fun deleteRecipeItem(OnSuccessCallback: () -> Unit, title: String, listPosition: Int) {
-        val recipeDeleteCompleteable =
-            recipeStore.delete(title).doOnComplete { println("Recipe $title Deleted") }.subscribe()
-        recipeList.removeAt(listPosition)
-        OnSuccessCallback()
-    }
 
     override fun onCleared() {
         super.onCleared()

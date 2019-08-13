@@ -8,14 +8,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.myapplication.Database.DBRecipe
 import com.example.myapplication.View.RecipeAdapter
 import com.example.myapplication.View.SwipeController
 import com.example.myapplication.ViewModel.RecipeViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
@@ -23,9 +26,15 @@ class RecipeFragment : Fragment() {
     init {
         println("fragment created")
     }
+
+    private var getDataDisposable: Disposable? = null
+    private var fetchAndInsertDisposable: Disposable? = null
+    private var deleteDataDisposable: Disposable? = null
     private lateinit var viewModel: RecipeViewModel
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
+    private val recipeList = mutableListOf<DBRecipe>()
+    private val adapter = RecipeAdapter(recipeList, this::createActivityIntent)
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -40,40 +49,59 @@ class RecipeFragment : Fragment() {
 
 
         mRecyclerView = fragmentView.findViewById(R.id.recipe_list)
-        mRecyclerView.adapter = RecipeAdapter(viewModel.recipeList, ::createActivityIntent)
+        mRecyclerView.adapter = adapter
         mRecyclerView.layoutManager = LinearLayoutManager(this.context)
 
 
         mSwipeRefreshLayout = fragmentView.findViewById(R.id.swipe_refresh)
         mSwipeRefreshLayout.setOnRefreshListener {
             println("swiping")
+            refreshData(startIngredient)
             getData(ingredient = startIngredient, networkRefresh = true)
             mSwipeRefreshLayout.isRefreshing = false
         }
 
-        val itemTouchhelper = ItemTouchHelper(SwipeController(::deleteRecipeItem))
-        itemTouchhelper.attachToRecyclerView(mRecyclerView)
+        val itemTouchHelper = ItemTouchHelper(SwipeController(::deleteRecipeItem))
+        itemTouchHelper.attachToRecyclerView(mRecyclerView)
 
         getData(startIngredient)
         return fragmentView
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        getDataDisposable?.dispose()
+        deleteDataDisposable?.dispose()
+        fetchAndInsertDisposable?.dispose()
+    }
 
-    private fun deleteRecipeItem(ingredient: String, listPosition: Int) {
-        viewModel.deleteRecipeItem(mRecyclerView.adapter!!::notifyDataSetChanged, ingredient, listPosition)
+    private fun deleteRecipeItem(title: String) {
+        deleteDataDisposable = viewModel.deleteRecipeItem(title)
+    }
+
+    private fun refreshData(ingredient: String = Constants.defaultIngredient) {
+        fetchAndInsertDisposable = viewModel.fetchAndInsertItems(ingredient)
     }
 
     private fun getData(ingredient: String = Constants.defaultIngredient, networkRefresh: Boolean = false) {
-        val singleItem = viewModel.getData(ingredient, networkRefresh)
+        val flowableRecipeList = viewModel.getData(ingredient, networkRefresh)
 
-        singleItem.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-            { mRecyclerView.adapter!!.notifyDataSetChanged() },
+        getDataDisposable =
+            flowableRecipeList.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                { newList ->
+                    if (newList.isNullOrEmpty()) {
+                        refreshData(ingredient)
+                    }
+                    val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(DiffRecipeLists(newList, recipeList))
+                    recipeList.clear()
+                    recipeList.addAll(newList)
+                    diffResult.dispatchUpdatesTo(adapter)
+                },
             {
-                println("Error in fetxhing data for ingredient: $ingredient" + it.message.toString())
+                println("Error in fetching data for ingredient: $ingredient" + it.message.toString())
                 onFailureCallback()
             }
         )
-
     }
 
     private fun onFailureCallback() =
@@ -90,6 +118,22 @@ class RecipeFragment : Fragment() {
             .replace(R.id.fragment_container, recipeFragment)
             .addToBackStack(null)
             .commit()
+    }
+
+
+    class DiffRecipeLists(private val newList: List<DBRecipe>, private val oldList: List<DBRecipe>) :
+        DiffUtil.Callback() {
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldList[oldItemPosition].title == newList[newItemPosition].title
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldList[oldItemPosition] == newList[newItemPosition]
+
     }
 
 }

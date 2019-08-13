@@ -1,7 +1,7 @@
 package com.example.myapplication.Database
 
 import io.reactivex.Completable
-import io.reactivex.Single
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -26,11 +26,11 @@ class DatabaseStore(private val dbFunctions: DBFunctions) : Store {
                     it.title.trim()
                 )
             })
-        }
+        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
     }
 
 
-    override fun get(ingredient: String): Single<List<DBRecipe>> {
+    override fun get(ingredient: String): Flowable<List<DBRecipe>> {
         return dbFunctions.fetchRecipeNameList(ingredient)
     }
 

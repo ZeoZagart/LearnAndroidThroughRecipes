@@ -1,7 +1,7 @@
 package com.example.myapplication.Database
 
 import androidx.room.*
-import io.reactivex.Single
+import io.reactivex.Flowable
 
 @Dao
 interface DBFunctions {
@@ -24,5 +24,5 @@ interface DBFunctions {
     }
 
     @Query("SELECT DBRecipe.title,href,ingredients,thumbnail FROM DBRecipeSearchResult INNER JOIN DBRecipe ON DBRecipe.title = DBRecipeSearchResult.title WHERE ingredient = :ingredient")
-    fun fetchRecipeNameList(ingredient: String): Single<List<DBRecipe>>
+    fun fetchRecipeNameList(ingredient: String): Flowable<List<DBRecipe>>
 }

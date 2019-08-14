@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -14,6 +16,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.Database.DBRecipe
+import com.example.myapplication.Database.DatabaseStore
+import com.example.myapplication.Database.RecipeDatabase
+import com.example.myapplication.Network.Networking
+import com.example.myapplication.Network.PuppyService
 import com.example.myapplication.View.RecipeAdapter
 import com.example.myapplication.View.SwipeController
 import com.example.myapplication.ViewModel.RecipeViewModel
@@ -44,7 +50,18 @@ class RecipeFragment : Fragment() {
 
 
         val startIngredient = arguments?.getString(Constants.saveIngredientKey) ?: Constants.defaultIngredient
-        viewModel = ViewModelProviders.of(activity!!).get(RecipeViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity!!, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return RecipeViewModel(
+                    DatabaseStore(RecipeDatabase.getDatabase(activity!!.applicationContext).DBFunctions()),
+                    Networking.create().create(PuppyService::class.java)
+                ) as T
+            }
+        }).get(RecipeViewModel::class.java)
+        //viewModel = ViewModelProviders.of(activity!!).get(RecipeViewModel::class.java)
+
+
+
         callback.changeActionBarTitle(startIngredient)
 
 

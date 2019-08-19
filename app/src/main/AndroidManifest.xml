@@ -5,6 +5,7 @@
             android:name="android.permission.INTERNET"
     />
     <application
+            android:name=".RecipeApplication"
             android:usesCleartextTraffic="true"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"

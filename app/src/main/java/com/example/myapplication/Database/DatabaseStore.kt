@@ -4,14 +4,14 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 
-class DatabaseStore(private val dbFunctions: DBFunctions) : Store {
-
+class DatabaseStore @Inject constructor(private val recipeDao: RecipeDao) : Store {
     override fun put(ingredient: String, recipeList: List<DBRecipe>): Completable {
         return Completable.fromAction {
             // insert recipe
-            dbFunctions.insertRecipes(recipeList.map {
+            recipeDao.insertRecipes(recipeList.map {
                 DBRecipe(
                     it.title.trim(),
                     it.href.trim(),
@@ -20,7 +20,7 @@ class DatabaseStore(private val dbFunctions: DBFunctions) : Store {
                 )
             })
             // insert search result
-            dbFunctions.insertSearchResults(recipeList.map {
+            recipeDao.insertSearchResults(recipeList.map {
                 DBRecipeSearchResult(
                     ingredient.trim(),
                     it.title.trim()
@@ -31,11 +31,11 @@ class DatabaseStore(private val dbFunctions: DBFunctions) : Store {
 
 
     override fun get(ingredient: String): Flowable<List<DBRecipe>> {
-        return dbFunctions.fetchRecipeNameList(ingredient)
+        return recipeDao.fetchRecipeNameList(ingredient)
     }
 
     override fun delete(title: String): Completable {
-        return Completable.fromAction { dbFunctions.deleteRecipe(title) }.subscribeOn(Schedulers.io())
+        return Completable.fromAction { recipeDao.deleteRecipe(title) }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 }

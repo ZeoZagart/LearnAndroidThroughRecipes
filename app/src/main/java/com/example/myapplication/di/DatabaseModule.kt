@@ -1,24 +1,28 @@
 package com.example.myapplication.di
 
 import android.content.Context
-import com.example.myapplication.Database.DBFunctions
-import com.example.myapplication.Database.DatabaseStore
+import androidx.room.Room
+import com.example.myapplication.Database.RecipeDao
 import com.example.myapplication.Database.RecipeDatabase
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class DatabaseModule(val context: Context) {
+class DatabaseModule(private val context: Context) {
     @Provides
     @Singleton
-    fun provideDatabaseFunctions(): DBFunctions {
-        return RecipeDatabase.getDatabase(context).DBFunctions()
+    fun provideDatabase(): RecipeDatabase {
+        return Room.databaseBuilder(
+            context.applicationContext,
+            RecipeDatabase::class.java,
+            "recipe.db"
+        ).build()
     }
 
     @Provides
     @Singleton
-    fun provideDatabaseStore(functions: DBFunctions): DatabaseStore {
-        return DatabaseStore(functions)
+    fun provideDatabaseFunctions(database: RecipeDatabase): RecipeDao {
+        return database.recipeDao()
     }
 }

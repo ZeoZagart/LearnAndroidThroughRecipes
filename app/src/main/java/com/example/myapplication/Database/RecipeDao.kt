@@ -4,7 +4,7 @@ import androidx.room.*
 import io.reactivex.Flowable
 
 @Dao
-interface DBFunctions {
+interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSearchResults(dbRecipeSearchResults: List<DBRecipeSearchResult>)
 

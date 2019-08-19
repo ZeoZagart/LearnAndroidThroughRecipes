@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 @Database(entities = [DBRecipe::class, DBRecipeSearchResult::class], version = 1)
 abstract class RecipeDatabase : RoomDatabase() {
-    abstract fun DBFunctions(): DBFunctions
+    abstract fun recipeDao(): RecipeDao
 
 
     companion object {

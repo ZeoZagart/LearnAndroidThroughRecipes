@@ -1,5 +1,6 @@
 package com.example.myapplication.Network
 
+import com.example.myapplication.Constants
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -17,7 +18,7 @@ object Networking {
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(client)
-            .baseUrl("http://www.recipepuppy.com/")
+            .baseUrl(Constants.apiURL)
             .build()
     }
 }

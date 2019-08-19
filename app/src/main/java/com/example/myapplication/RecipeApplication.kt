@@ -5,7 +5,7 @@ import com.example.myapplication.di.*
 
 class RecipeApplication : Application() {
     val appComponent: AppComponent = DaggerAppComponent.builder()
-        .contextModule(ContextModule(this))
+        .contextModule(ContextModule(this.applicationContext))
         .netModule(NetModule())
         .databaseModule(DatabaseModule())
         .build()

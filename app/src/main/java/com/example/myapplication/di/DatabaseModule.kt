@@ -14,7 +14,7 @@ class DatabaseModule {
     @Singleton
     fun provideDatabase(context: Context): RecipeDatabase {
         return Room.databaseBuilder(
-            context.applicationContext,
+            context,
             RecipeDatabase::class.java,
             "recipe.db"
         ).build()

@@ -5,7 +5,7 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [NetModule::class, DatabaseModule::class])
+@Component(modules = [NetModule::class, DatabaseModule::class, ContextModule::class])
 interface AppComponent {
 
     fun inject(recipeFragment: RecipeFragment)

@@ -9,10 +9,10 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class DatabaseModule(private val context: Context) {
+class DatabaseModule {
     @Provides
     @Singleton
-    fun provideDatabase(): RecipeDatabase {
+    fun provideDatabase(context: Context): RecipeDatabase {
         return Room.databaseBuilder(
             context.applicationContext,
             RecipeDatabase::class.java,

@@ -16,10 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.Database.DBRecipe
-import com.example.myapplication.Database.DatabaseStore
-import com.example.myapplication.Network.PuppyService
 import com.example.myapplication.View.RecipeAdapter
 import com.example.myapplication.View.SwipeController
+import com.example.myapplication.ViewModel.RecipeRepository
 import com.example.myapplication.ViewModel.RecipeViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -41,9 +40,7 @@ class RecipeFragment : Fragment() {
     private val recipeList = mutableListOf<DBRecipe>()
     private val adapter = RecipeAdapter(recipeList, this::createActivityIntent)
     @Inject
-    lateinit var databaseStore: DatabaseStore
-    @Inject
-    lateinit var puppyService: PuppyService
+    lateinit var recipeRepository: RecipeRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +58,7 @@ class RecipeFragment : Fragment() {
         val startIngredient = arguments?.getString(Constants.saveIngredientKey) ?: Constants.defaultIngredient
         viewModel = ViewModelProviders.of(activity!!, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return RecipeViewModel(databaseStore, puppyService) as T
+                return RecipeViewModel(recipeRepository) as T
             }
         }).get(RecipeViewModel::class.java)
 
@@ -77,7 +74,7 @@ class RecipeFragment : Fragment() {
         mSwipeRefreshLayout.setOnRefreshListener {
             println("swiping")
             refreshData(startIngredient)
-            getData(ingredient = startIngredient, networkRefresh = true)
+            getData(ingredient = startIngredient)
             mSwipeRefreshLayout.isRefreshing = false
         }
 
@@ -103,8 +100,8 @@ class RecipeFragment : Fragment() {
         fetchAndInsertDisposable = viewModel.fetchAndInsertItems(ingredient)
     }
 
-    private fun getData(ingredient: String = Constants.defaultIngredient, networkRefresh: Boolean = false) {
-        val flowableRecipeList = viewModel.getData(ingredient, networkRefresh)
+    private fun getData(ingredient: String = Constants.defaultIngredient) {
+        val flowableRecipeList = viewModel.getData(ingredient)
 
         getDataDisposable =
             flowableRecipeList.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(

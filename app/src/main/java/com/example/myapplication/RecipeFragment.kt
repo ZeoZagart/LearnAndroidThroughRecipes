@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.myapplication.Database.DBRecipe
+import com.example.myapplication.Database.Recipe
 import com.example.myapplication.View.RecipeAdapter
 import com.example.myapplication.View.SwipeController
 import com.example.myapplication.ViewModel.RecipeRepository
@@ -37,7 +37,7 @@ class RecipeFragment : Fragment() {
     private lateinit var viewModel: RecipeViewModel
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
-    private val recipeList = mutableListOf<DBRecipe>()
+    private val recipeList = mutableListOf<Recipe>()
     private val adapter = RecipeAdapter(recipeList, this::createActivityIntent)
     @Inject
     lateinit var recipeRepository: RecipeRepository
@@ -138,7 +138,7 @@ class RecipeFragment : Fragment() {
     }
 
 
-    class DiffRecipeLists(private val newList: List<DBRecipe>, private val oldList: List<DBRecipe>) :
+    class DiffRecipeLists(private val newList: List<Recipe>, private val oldList: List<Recipe>) :
         DiffUtil.Callback() {
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =

@@ -8,11 +8,11 @@ import javax.inject.Inject
 
 
 class DatabaseStore @Inject constructor(private val recipeDao: RecipeDao) : Store {
-    override fun put(ingredient: String, recipeList: List<DBRecipe>): Completable {
+    override fun put(ingredient: String, recipeList: List<Recipe>): Completable {
         return Completable.fromAction {
             // insert recipe
             recipeDao.insertRecipes(recipeList.map {
-                DBRecipe(
+                Recipe(
                     it.title.trim(),
                     it.href.trim(),
                     it.ingredients.trim(),
@@ -21,7 +21,7 @@ class DatabaseStore @Inject constructor(private val recipeDao: RecipeDao) : Stor
             })
             // insert search result
             recipeDao.insertSearchResults(recipeList.map {
-                DBRecipeSearchResult(
+                RecipeSearchResult(
                     ingredient.trim(),
                     it.title.trim()
                 )
@@ -30,7 +30,7 @@ class DatabaseStore @Inject constructor(private val recipeDao: RecipeDao) : Stor
     }
 
 
-    override fun get(ingredient: String): Flowable<List<DBRecipe>> {
+    override fun get(ingredient: String): Flowable<List<Recipe>> {
         return recipeDao.fetchRecipeNameList(ingredient)
     }
 

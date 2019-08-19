@@ -9,11 +9,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.Database.DBRecipe
+import com.example.myapplication.Database.Recipe
 import com.example.myapplication.R
 import com.squareup.picasso.Picasso
 
-class RecipeAdapter(private val recipeList: List<DBRecipe>, val clickListener: (String) -> Unit) : RecyclerView.Adapter<RecipeViewHolder>() {
+class RecipeAdapter(private val recipeList: List<Recipe>, val clickListener: (String) -> Unit) :
+    RecyclerView.Adapter<RecipeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         val inflater = LayoutInflater.from(parent.context)

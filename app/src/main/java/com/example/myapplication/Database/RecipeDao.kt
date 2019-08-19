@@ -6,15 +6,15 @@ import io.reactivex.Flowable
 @Dao
 interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertSearchResults(dbRecipeSearchResults: List<DBRecipeSearchResult>)
+    fun insertSearchResults(recipeSearchResults: List<RecipeSearchResult>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertRecipes(recipeList: List<DBRecipe>)
+    fun insertRecipes(recipeList: List<Recipe>)
 
-    @Query("DELETE FROM DBRecipe WHERE title = :title")
+    @Query("DELETE FROM Recipe WHERE title = :title")
     fun deleteRecipeDBRecipe(title: String)
 
-    @Query("DELETE FROM DBRecipeSearchResult WHERE title = :title")
+    @Query("DELETE FROM RecipeSearchResult WHERE title = :title")
     fun deleteRecipeDBRecipeSearchResult(title: String)
 
     @Transaction
@@ -23,6 +23,6 @@ interface RecipeDao {
         deleteRecipeDBRecipe(title)
     }
 
-    @Query("SELECT DBRecipe.title,href,ingredients,thumbnail FROM DBRecipeSearchResult INNER JOIN DBRecipe ON DBRecipe.title = DBRecipeSearchResult.title WHERE ingredient = :ingredient")
-    fun fetchRecipeNameList(ingredient: String): Flowable<List<DBRecipe>>
+    @Query("SELECT Recipe.title,href,ingredients,thumbnail FROM RecipeSearchResult INNER JOIN Recipe ON Recipe.title = RecipeSearchResult.title WHERE ingredient = :ingredient")
+    fun fetchRecipeNameList(ingredient: String): Flowable<List<Recipe>>
 }

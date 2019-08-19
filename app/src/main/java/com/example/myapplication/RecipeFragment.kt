@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.Database.DBRecipe
 import com.example.myapplication.Database.DatabaseStore
-import com.example.myapplication.Database.RecipeDatabase
-import com.example.myapplication.Network.Networking
 import com.example.myapplication.Network.PuppyService
 import com.example.myapplication.View.RecipeAdapter
 import com.example.myapplication.View.SwipeController
@@ -26,6 +24,7 @@ import com.example.myapplication.ViewModel.RecipeViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 
 class RecipeFragment : Fragment() {
@@ -41,6 +40,16 @@ class RecipeFragment : Fragment() {
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
     private val recipeList = mutableListOf<DBRecipe>()
     private val adapter = RecipeAdapter(recipeList, this::createActivityIntent)
+    @Inject
+    lateinit var databaseStore: DatabaseStore
+    @Inject
+    lateinit var puppyService: PuppyService
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity!!.application as RecipeApplication).appComponent.inject(this)
+    }
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -52,15 +61,9 @@ class RecipeFragment : Fragment() {
         val startIngredient = arguments?.getString(Constants.saveIngredientKey) ?: Constants.defaultIngredient
         viewModel = ViewModelProviders.of(activity!!, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return RecipeViewModel(
-                    DatabaseStore(RecipeDatabase.getDatabase(activity!!.applicationContext).DBFunctions()),
-                    Networking.create().create(PuppyService::class.java)
-                ) as T
+                return RecipeViewModel(databaseStore, puppyService) as T
             }
         }).get(RecipeViewModel::class.java)
-        //viewModel = ViewModelProviders.of(activity!!).get(RecipeViewModel::class.java)
-
-
 
         callback.changeActionBarTitle(startIngredient)
 
@@ -114,11 +117,11 @@ class RecipeFragment : Fragment() {
                     recipeList.addAll(newList)
                     diffResult.dispatchUpdatesTo(adapter)
                 },
-            {
-                println("Error in fetching data for ingredient: $ingredient" + it.message.toString())
-                onFailureCallback()
-            }
-        )
+                {
+                    println("Error in fetching data for ingredient: $ingredient" + it.message.toString())
+                    onFailureCallback()
+                }
+            )
     }
 
     private fun onFailureCallback() =

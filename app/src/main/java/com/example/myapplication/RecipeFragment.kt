@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,9 +42,15 @@ class RecipeFragment : Fragment() {
     private val adapter = RecipeAdapter(recipeList, this::createActivityIntent)
     @Inject
     lateinit var recipeRepository: RecipeRepository
+    var spanCnt = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (activity!!.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            spanCnt = 3
+        } else {
+            spanCnt = 2
+        }
         (activity!!.application as RecipeApplication).appComponent.inject(this)
     }
 
@@ -62,13 +69,12 @@ class RecipeFragment : Fragment() {
             }
         }).get(RecipeViewModel::class.java)
 
-        callback.changeActionBarTitle(startIngredient)
+        callback.changeActionBarTitle(startIngredient.capitalize())
 
 
         mRecyclerView = fragmentView.findViewById(R.id.recipe_list)
         mRecyclerView.adapter = adapter
-        mRecyclerView.layoutManager = StaggeredGridLayoutManager(2, 1)
-
+        mRecyclerView.layoutManager = StaggeredGridLayoutManager(spanCnt, RecyclerView.VERTICAL)
 
         mSwipeRefreshLayout = fragmentView.findViewById(R.id.swipe_refresh)
         mSwipeRefreshLayout.setOnRefreshListener {

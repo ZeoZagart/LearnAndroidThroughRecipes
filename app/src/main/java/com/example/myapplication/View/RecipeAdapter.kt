@@ -40,7 +40,7 @@ class RecipeAdapter(private val recipeList: List<Recipe>, val clickListener: (St
         holder.mIngredientView.setOnClickListener { clickListener(ingredientList[0]) }
         holder.mImageView.setOnClickListener { clickListener(ingredientList[0]) }
 
-        Picasso.get().load(recipeList[position].thumbnail).resize(160, 160).into(holder.mImageView)
+        Picasso.get().load(recipeList[position].thumbnail).resize(240, 240).into(holder.mImageView)
     }
 
 }

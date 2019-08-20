@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3cc8c8</color>
-    <color name="colorPrimaryDark">#3cc8c8</color>
-    <color name="colorAccent">#3cc8c8</color>
-    <color name="boxColor">#50ABD2</color>
-    <color name="bgColor">#4672B5</color>
-    <color name="titleColor">#FFF</color>
-    <color name="ingredientColor">#FFF</color>
+    <color name="colorPrimary">#DADCEF</color>
+    <color name="colorPrimaryDark">#DADCEF</color>
+    <color name="colorAccent">#DADCEF</color>
+    <color name="boxColor">#C6DAEE</color>
+    <color name="bgColor">#E9EAF1</color>
+    <color name="titleColor">#444</color>
+    <color name="ingredientColor">#AAF</color>
+    <color name="textBgColor">#FFFFFF</color>
 </resources>

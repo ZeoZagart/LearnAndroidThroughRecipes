@@ -6,7 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="3dp"
-        android:outlineAmbientShadowColor="@color/bgColor"
 >
     <ImageView
             android:id="@+id/recipe_image"
@@ -18,8 +17,10 @@
     />
     <LinearLayout
             android:layout_gravity="center"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/textBgColor"
+            android:background="@drawable/layout_background"
             android:orientation="vertical">
         <TextView
                 android:textColor="@color/titleColor"

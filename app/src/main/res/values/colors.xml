@@ -7,4 +7,5 @@
     <color name="bgColor">#4672B5</color>
     <color name="titleColor">#FFF</color>
     <color name="ingredientColor">#FFF</color>
+    <color name="textBgColor">#304BA2</color>
 </resources>

@@ -1,38 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
+        android:background="@drawable/layout_background"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="14dp"
-        android:background="@android:color/darker_gray"
+        android:layout_margin="3dp"
+        android:outlineAmbientShadowColor="@color/bgColor"
 >
     <ImageView
             android:id="@+id/recipe_image"
-            android:padding="8dp"
+            android:paddingTop="10dp"
+            android:layout_margin="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@android:drawable/ic_media_rew"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/layout_background"
     />
 
     <LinearLayout
+            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
         <TextView
+                android:textColor="@color/titleColor"
+                android:textAlignment="center"
+                android:layout_gravity="center"
                 android:id="@+id/recipe_item"
-                android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:textSize="24sp"
+                android:paddingTop="3dp"
+                android:textSize="18dp"
                 android:text="Empty Now"/>
         <TextView
+                android:textColor="@color/ingredientColor"
+                android:textAlignment="center"
+                android:layout_gravity="center"
                 android:id="@+id/recipe_ingredients"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
+                android:padding="5dp"
+                android:layout_marginBottom="5dp"
                 android:textSize="14sp"
                 android:text="Empty Now"/>
     </LinearLayout>

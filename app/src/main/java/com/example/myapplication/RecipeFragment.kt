@@ -12,8 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.Database.Recipe
 import com.example.myapplication.View.RecipeAdapter
@@ -67,7 +67,7 @@ class RecipeFragment : Fragment() {
 
         mRecyclerView = fragmentView.findViewById(R.id.recipe_list)
         mRecyclerView.adapter = adapter
-        mRecyclerView.layoutManager = LinearLayoutManager(this.context)
+        mRecyclerView.layoutManager = StaggeredGridLayoutManager(2, 1)
 
 
         mSwipeRefreshLayout = fragmentView.findViewById(R.id.swipe_refresh)

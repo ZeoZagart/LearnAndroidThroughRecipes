@@ -1,6 +1,7 @@
 package com.example.myapplication.View;
 
 import android.graphics.*;
+import com.example.myapplication.Constants;
 import com.squareup.picasso.Transformation;
 
 public class CircleTransform implements Transformation {
@@ -96,9 +97,9 @@ public class CircleTransform implements Transformation {
         //canvas.drawCircle(r, r, r, paintBg);
 
         // Draw the image smaller than the background so a little border will be seen
+        Integer radius = 4 * Constants.INSTANCE.getDp() / 160;
 
-
-        Path path = RoundedRect(0, 0, source.getWidth(), source.getHeight(), 20, 15, true, true, false, false);
+        Path path = RoundedRect(0, 0, source.getWidth(), source.getHeight(), radius, radius, true, true, false, false);
         //canvas.drawRoundRect(new RectF(0, 0, source.getWidth(), source.getHeight()), 0, r - BORDER_RADIUS, paint);
         canvas.drawPath(path, paint);
 

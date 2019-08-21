@@ -7,6 +7,8 @@ class RecipeApplication : Application() {
     lateinit var appComponent: AppComponent
 
     override fun onCreate() {
+        deleteDatabase("recipe.db")
+        Constants.dp = resources.displayMetrics.densityDpi
         super.onCreate()
         appComponent = DaggerAppComponent.builder()
             .contextModule(ContextModule(this.applicationContext))
